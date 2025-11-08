@@ -1,0 +1,5 @@
+{
+  "name": "HTML Product Scraper",
+  "description": "An application to quickly scrape and extract product titles and prices from raw HTML content using DOM parsing.",
+  "requestFramePermissions": []
+}
