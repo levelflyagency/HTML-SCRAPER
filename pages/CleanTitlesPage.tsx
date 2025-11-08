@@ -12,23 +12,21 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
   // Placeholder for cleaned data until functionality is added
   const cleanedProducts: Product[] = [];
 
-  const handleCopyToCsv = (data: Product[], setText: React.Dispatch<React.SetStateAction<string>>) => {
+  const handleCopy = (data: Product[], setText: React.Dispatch<React.SetStateAction<string>>) => {
     if (data.length === 0) return;
 
-    const header = "Title,Price,Currency\n";
-    const csvRows = data.map(p => {
-      // Escape double quotes and wrap title in double quotes to handle commas correctly in CSV
-      const escapedTitle = `"${p.title.replace(/"/g, '""')}"`;
-      return `${escapedTitle},${p.price},${p.currency}`;
-    });
-
-    const csvContent = [header, ...csvRows].join('\n');
-
-    navigator.clipboard.writeText(csvContent).then(() => {
+    const header = "Title\tPrice\n";
+    const tsvContent = data
+      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.price.toFixed(2)}`)
+      .join('\n');
+    
+    const fullContent = header + tsvContent;
+  
+    navigator.clipboard.writeText(fullContent).then(() => {
       setText('Copied!');
       setTimeout(() => setText('Copy All'), 2000);
     }).catch(err => {
-      console.error('Failed to copy CSV to clipboard:', err);
+      console.error('Failed to copy TSV to clipboard:', err);
     });
   };
 
@@ -47,15 +45,14 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
 
   const ListHeader: React.FC = () => (
     <div className="grid grid-cols-12 gap-4 px-3 pb-2 border-b border-base-300 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        <div className="col-span-8">Product Title</div>
+        <div className="col-span-10">Product Title</div>
         <div className="col-span-2 text-right">Price</div>
-        <div className="col-span-2 text-right">Currency</div>
     </div>
   );
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Title Cleaning Workbench</h2>
       </div>
       
@@ -64,13 +61,13 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
         <div className="flex flex-col space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold">Original Titles ({products.length})</h3>
-             <button
-                onClick={() => handleCopyToCsv(products, setOriginalCopyText)}
-                className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50"
-                disabled={originalCopyText === 'Copied!'}
-              >
-                {originalCopyText}
-              </button>
+            <button
+              onClick={() => handleCopy(products, setOriginalCopyText)}
+              className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50"
+              disabled={originalCopyText === 'Copied!' || products.length === 0}
+            >
+              {originalCopyText}
+            </button>
           </div>
           <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px] flex flex-col">
             <ListHeader />
@@ -85,7 +82,7 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
                     }`}
                     title={product.title}
                   >
-                    <div className="col-span-8 flex items-center space-x-3 min-w-0">
+                    <div className="col-span-10 flex items-center space-x-3 min-w-0">
                         {isTitleLong && (
                         <div className="flex-shrink-0" title="Title is longer than 150 characters.">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
@@ -97,9 +94,6 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
                     </div>
                     <div className="col-span-2 text-right font-mono text-gray-300">
                         {product.price.toFixed(2)}
-                    </div>
-                    <div className="col-span-2 text-right font-semibold text-gray-400">
-                        {product.currency}
                     </div>
                   </li>
                 );
@@ -113,12 +107,12 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
            <div className="flex justify-between items-center">
              <h3 className="text-xl font-semibold">Cleaned Titles</h3>
              <button
-                onClick={() => handleCopyToCsv(cleanedProducts, setCleanedCopyText)}
-                className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={cleanedProducts.length === 0 || cleanedCopyText === 'Copied!'}
-              >
-                {cleanedCopyText}
-              </button>
+              onClick={() => handleCopy(cleanedProducts, setCleanedCopyText)}
+              className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50"
+              disabled={true} // Always disabled for now
+            >
+              {cleanedCopyText}
+            </button>
            </div>
            <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px] flex flex-col">
               <ListHeader />

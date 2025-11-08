@@ -137,9 +137,9 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
   const handleCopyAll = () => {
     if (scrapedData.length === 0) return;
   
-    const header = "Title\tPrice\tCurrency\n";
+    const header = "Title\tPrice\n";
     const tsvContent = scrapedData
-      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.price}\t${p.currency}`)
+      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.price.toFixed(2)}`)
       .join('\n');
     
     const fullContent = header + tsvContent;
@@ -268,7 +268,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
                 <ul className="space-y-2">
                     {scrapedData.map((product, index) => (
                     <li key={index} className="bg-base-200 p-2 rounded text-sm border-l-4 border-brand-primary font-semibold">
-                        {new Intl.NumberFormat('en-US', { style: 'currency', currency: product.currency }).format(product.price)}
+                        {product.price.toFixed(2)}
                     </li>
                     ))}
                 </ul>
@@ -290,7 +290,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
                         <li key={`dup-${index}`} className="bg-base-200 p-2 rounded text-sm text-gray-500 line-through flex justify-between items-center">
                             <span className="truncate pr-4" title={product.title}>{product.title}</span>
                             <span className="font-semibold text-gray-500 whitespace-nowrap">
-                                {new Intl.NumberFormat('en-US', { style: 'currency', currency: product.currency }).format(product.price)}
+                                {product.price.toFixed(2)}
                             </span>
                         </li>
                     ))}
