@@ -1,12 +1,11 @@
-
 import { Product } from '../types';
 
-export const scrapeProductsFromHtml = (html: string): Product[] => {
+export const scrapeProductsFromHtml = (html: string): { products: Product[], duplicatesRemoved: number } => {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     
-    const products: Product[] = [];
+    const rawProducts: Product[] = [];
     
     // This selector is tailored to the structure of the product cards in the initial HTML.
     const productElements = doc.querySelectorAll('.col-sm-6.col-md-3.col-xs-12');
@@ -23,12 +22,26 @@ export const scrapeProductsFromHtml = (html: string): Product[] => {
         const currency = currencyElement.textContent?.trim() || 'N/A';
         
         if (!isNaN(price)) {
-          products.push({ title, price, currency });
+          rawProducts.push({ title, price, currency });
         }
       }
     });
 
-    return products;
+    // Filter out duplicates based on product title
+    const seenTitles = new Set<string>();
+    const uniqueProducts = rawProducts.filter(product => {
+      if (seenTitles.has(product.title)) {
+        return false;
+      } else {
+        seenTitles.add(product.title);
+        return true;
+      }
+    });
+    
+    const duplicatesRemoved = rawProducts.length - uniqueProducts.length;
+
+    return { products: uniqueProducts, duplicatesRemoved };
+
   } catch (error) {
     console.error("Error parsing HTML:", error);
     if (error instanceof Error) {

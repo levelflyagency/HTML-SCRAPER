@@ -20,6 +20,23 @@ const initialHtml = `<div class="row g-col-gutter-30">
       </div>
     </div>
   </div>
+   <div class="col-sm-6 col-md-3 col-xs-12">
+    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
+      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
+        <div data-v-1df071b5="" class="q-pa-md">
+          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
+            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68</span>
+          </div>
+        </div>
+      </a>
+      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
+        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
+          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
+          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
+        </a>
+      </div>
+    </div>
+  </div>
   <div class="col-sm-6 col-md-3 col-xs-12">
     <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
       <a data-v-1df071b5="" href="/some-link-2" class="full-height column g-card-no-deco">
@@ -64,6 +81,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy All');
+  const [notification, setNotification] = useState<string | null>(null);
 
 
   const handleScrape = useCallback(async () => {
@@ -74,14 +92,22 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setScrapedData([]);
+    setNotification(null);
 
     // Use a short delay to allow the UI to update to the loading state
     await new Promise(resolve => setTimeout(resolve, 50));
 
     try {
-      const data = scrapeProductsFromHtml(htmlContent);
-      setScrapedData(data);
-      if (data.length === 0) {
+      const { products, duplicatesRemoved } = scrapeProductsFromHtml(htmlContent);
+      setScrapedData(products);
+
+      if (duplicatesRemoved > 0) {
+        const message = `${duplicatesRemoved} duplicate product(s) found and removed.`;
+        setNotification(message);
+        setTimeout(() => setNotification(null), 4000); // Auto-hide after 4 seconds
+      }
+
+      if (products.length === 0) {
         setError("No products could be extracted. Check the HTML structure and selectors.");
       }
     } catch (e) {
@@ -96,6 +122,7 @@ const App: React.FC = () => {
     setHtmlContent('');
     setScrapedData([]);
     setError(null);
+    setNotification(null);
   }
 
   const handleCopyAll = () => {
@@ -190,6 +217,11 @@ const App: React.FC = () => {
                 </button>
               )}
             </div>
+            {notification && (
+              <div className="bg-green-800/30 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg relative text-center text-sm transition-all duration-300" role="alert">
+                <span className="block sm:inline">{notification}</span>
+              </div>
+            )}
             <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px]">
               {isLoading ? (
                 <Spinner />
@@ -223,7 +255,7 @@ const App: React.FC = () => {
               )}
             </div>
              <div className="text-sm text-gray-400 text-center">
-                Found {scrapedData.length} products.
+                Found {scrapedData.length} unique products.
              </div>
           </div>
         </div>
