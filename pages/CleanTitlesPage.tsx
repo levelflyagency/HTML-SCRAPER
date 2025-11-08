@@ -9,8 +9,24 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
   const [originalCopyText, setOriginalCopyText] = useState('Copy All');
   const [cleanedCopyText, setCleanedCopyText] = useState('Copy All');
 
-  // Placeholder for cleaned data until functionality is added
-  const cleanedProducts: Product[] = [];
+  // Apply the cleaning rules to the product titles
+  const cleanedProducts: Product[] = products.map(product => {
+    let cleanedTitle = product.title
+      .replace(/•/g, '|')
+      .replace(/【/g, '[')
+      .replace(/】/g, '] ');
+
+    // Remove any character that is not an alphanumeric, a space, or one of the allowed symbols
+    cleanedTitle = cleanedTitle.replace(/[^a-zA-Z0-9\s|\[\]\-%+&.,:/]/g, '');
+    
+    // Condense multiple spaces into one and trim whitespace
+    cleanedTitle = cleanedTitle.replace(/\s\s+/g, ' ').trim();
+
+    return {
+      ...product,
+      title: cleanedTitle,
+    };
+  });
 
   const handleCopy = (data: Product[], setText: React.Dispatch<React.SetStateAction<string>>) => {
     if (data.length === 0) return;
@@ -105,25 +121,33 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
         {/* Cleaned Titles Panel */}
         <div className="flex flex-col space-y-4">
            <div className="flex justify-between items-center">
-             <h3 className="text-xl font-semibold">Cleaned Titles</h3>
+             <h3 className="text-xl font-semibold">Cleaned Titles ({cleanedProducts.length})</h3>
              <button
               onClick={() => handleCopy(cleanedProducts, setCleanedCopyText)}
               className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50"
-              disabled={true} // Always disabled for now
+              disabled={cleanedCopyText === 'Copied!' || cleanedProducts.length === 0}
             >
               {cleanedCopyText}
             </button>
            </div>
            <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px] flex flex-col">
               <ListHeader />
-              <div className="flex-grow flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                    <p>Cleaned titles will appear here.</p>
-                </div>
-              </div>
+              <ul className="space-y-2 mt-2 flex-grow overflow-y-auto">
+                {cleanedProducts.map((product, index) => (
+                  <li
+                    key={index}
+                    className="grid grid-cols-12 gap-4 items-center bg-base-200 p-3 rounded text-sm border-l-4 transition-colors hover:bg-base-300/50 border-brand-secondary"
+                    title={product.title}
+                  >
+                    <div className="col-span-10 flex items-center space-x-3 min-w-0">
+                      <span className="truncate">{product.title}</span>
+                    </div>
+                    <div className="col-span-2 text-right font-mono text-gray-300">
+                      {product.price.toFixed(2)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
            </div>
         </div>
       </div>
