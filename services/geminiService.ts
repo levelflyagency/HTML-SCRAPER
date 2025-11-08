@@ -1,6 +1,6 @@
 import { Product } from '../types';
 
-export const scrapeProductsFromHtml = (html: string): { products: Product[], duplicatesRemoved: number } => {
+export const scrapeProductsFromHtml = (html: string): { products: Product[], duplicatesRemovedCount: number, removedDuplicates: Product[] } => {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -27,20 +27,23 @@ export const scrapeProductsFromHtml = (html: string): { products: Product[], dup
       }
     });
 
-    // Filter out duplicates based on product title
+    // Filter out duplicates and collect them
     const seenTitles = new Set<string>();
-    const uniqueProducts = rawProducts.filter(product => {
+    const uniqueProducts: Product[] = [];
+    const removedDuplicates: Product[] = [];
+
+    rawProducts.forEach(product => {
       if (seenTitles.has(product.title)) {
-        return false;
+        removedDuplicates.push(product);
       } else {
         seenTitles.add(product.title);
-        return true;
+        uniqueProducts.push(product);
       }
     });
     
-    const duplicatesRemoved = rawProducts.length - uniqueProducts.length;
+    const duplicatesRemovedCount = removedDuplicates.length;
 
-    return { products: uniqueProducts, duplicatesRemoved };
+    return { products: uniqueProducts, duplicatesRemovedCount, removedDuplicates };
 
   } catch (error) {
     console.error("Error parsing HTML:", error);

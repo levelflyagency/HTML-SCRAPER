@@ -78,11 +78,12 @@ const EmptyState: React.FC = () => (
 const App: React.FC = () => {
   const [htmlContent, setHtmlContent] = useState<string>(initialHtml);
   const [scrapedData, setScrapedData] = useState<Product[]>([]);
+  const [removedDuplicates, setRemovedDuplicates] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy All');
   const [notification, setNotification] = useState<string | null>(null);
-
+  const [showDuplicates, setShowDuplicates] = useState<boolean>(false);
 
   const handleScrape = useCallback(async () => {
     if (!htmlContent.trim()) {
@@ -92,19 +93,20 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setScrapedData([]);
+    setRemovedDuplicates([]);
+    setShowDuplicates(false);
     setNotification(null);
 
-    // Use a short delay to allow the UI to update to the loading state
     await new Promise(resolve => setTimeout(resolve, 50));
 
     try {
-      const { products, duplicatesRemoved } = scrapeProductsFromHtml(htmlContent);
+      const { products, duplicatesRemovedCount, removedDuplicates } = scrapeProductsFromHtml(htmlContent);
       setScrapedData(products);
+      setRemovedDuplicates(removedDuplicates);
 
-      if (duplicatesRemoved > 0) {
-        const message = `${duplicatesRemoved} duplicate product(s) found and removed.`;
+      if (duplicatesRemovedCount > 0) {
+        const message = `${duplicatesRemovedCount} duplicate product(s) found and removed.`;
         setNotification(message);
-        setTimeout(() => setNotification(null), 4000); // Auto-hide after 4 seconds
       }
 
       if (products.length === 0) {
@@ -121,8 +123,10 @@ const App: React.FC = () => {
   const handleClear = () => {
     setHtmlContent('');
     setScrapedData([]);
+    setRemovedDuplicates([]);
     setError(null);
     setNotification(null);
+    setShowDuplicates(false);
   }
 
   const handleCopyAll = () => {
@@ -218,8 +222,18 @@ const App: React.FC = () => {
               )}
             </div>
             {notification && (
-              <div className="bg-green-800/30 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg relative text-center text-sm transition-all duration-300" role="alert">
-                <span className="block sm:inline">{notification}</span>
+              <div className="bg-green-800/30 border border-green-500/50 text-green-300 px-4 py-2 rounded-lg relative flex justify-between items-center text-sm" role="alert">
+                <span>{notification}</span>
+                {removedDuplicates.length > 0 && (
+                  <button 
+                    onClick={() => setShowDuplicates(s => !s)}
+                    className="ml-4 px-3 py-1 bg-green-600/50 hover:bg-green-500/50 rounded-md text-white font-semibold text-xs"
+                    aria-controls="duplicates-section"
+                    aria-expanded={showDuplicates}
+                  >
+                    {showDuplicates ? 'Hide' : 'View'} Duplicates
+                  </button>
+                )}
               </div>
             )}
             <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px]">
@@ -257,6 +271,23 @@ const App: React.FC = () => {
              <div className="text-sm text-gray-400 text-center">
                 Found {scrapedData.length} unique products.
              </div>
+             {showDuplicates && removedDuplicates.length > 0 && (
+              <div id="duplicates-section" className="bg-base-200/50 p-4 rounded-lg border border-base-300 animate-fade-in">
+                <h3 className="text-lg font-semibold text-amber-400 mb-3">Removed Duplicates ({removedDuplicates.length})</h3>
+                <div className="max-h-40 overflow-y-auto pr-2">
+                    <ul className="space-y-2">
+                        {removedDuplicates.map((product, index) => (
+                            <li key={`dup-${index}`} className="bg-base-200 p-2 rounded text-sm text-gray-500 line-through flex justify-between items-center">
+                                <span className="truncate pr-4" title={product.title}>{product.title}</span>
+                                <span className="font-semibold text-gray-500 whitespace-nowrap">
+                                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: product.currency }).format(product.price)}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
