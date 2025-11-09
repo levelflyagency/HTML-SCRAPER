@@ -213,6 +213,22 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
             </button>
             )}
         </div>
+        {(scrapedData.length > 0 || removedDuplicates.length > 0) && (
+            <div className="grid grid-cols-3 gap-4 text-center p-4 bg-base-300/50 rounded-lg animate-fade-in">
+                <div>
+                    <p className="text-2xl lg:text-3xl font-bold text-brand-secondary">{scrapedData.length + removedDuplicates.length}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Total Extracted</p>
+                </div>
+                <div>
+                    <p className="text-2xl lg:text-3xl font-bold text-green-400">{scrapedData.length}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Unique Items</p>
+                </div>
+                <div>
+                    <p className="text-2xl lg:text-3xl font-bold text-amber-400">{removedDuplicates.length}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Duplicates Removed</p>
+                </div>
+            </div>
+        )}
         {notification && (
             <div className="bg-green-800/30 border border-green-500/50 text-green-300 px-4 py-2 rounded-lg relative flex justify-between items-center text-sm" role="alert">
             <span>{notification}</span>
@@ -228,7 +244,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
             )}
             </div>
         )}
-        <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[600px]">
+        <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[520px]">
             {isLoading ? (
             <Spinner />
             ) : error ? (
@@ -278,10 +294,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
             <EmptyState />
             )}
         </div>
-            <div className="text-sm text-gray-400 text-center">
-            Found {scrapedData.length} unique products.
-            </div>
-            {showDuplicates && removedDuplicates.length > 0 && (
+        {showDuplicates && removedDuplicates.length > 0 && (
             <div id="duplicates-section" className="bg-base-200/50 p-4 rounded-lg border border-base-300 animate-fade-in">
             <h3 className="text-lg font-semibold text-amber-400 mb-3">Removed Duplicates ({removedDuplicates.length})</h3>
             <div className="max-h-40 overflow-y-auto pr-2">
