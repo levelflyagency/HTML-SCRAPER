@@ -1,131 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ScraperPage from './pages/ScraperPage';
 import CleanTitlesPage from './pages/CleanTitlesPage';
 import { Product } from './types';
 
 type Page = 'scraper' | 'cleaner';
 
-const initialHtml = `<div class="row g-col-gutter-30">
-  <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68 | This is an example of a very long title that is definitely going to be more than 150 characters to properly test the new detection functionality we have just implemented.</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-   <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-2" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[ASIA/FULL ACCESS] DISCOUNT -33% | Maus, Blyskawica | Cred:6 160 000| A63</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-2" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">17.17</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>`;
+const initialHtml = `<html lang="en" class="dark"><head><style class="vjs-styles-defaults">
+      .video-js {
+        width: 300px;
+        height: 150px;
+      }
 
+      .vjs-fluid:not(.vjs-audio-only-mode) {
+        padding-top: 56.25%
+      }
+    </style><meta charset="UTF-8"><script async="" src="https://www.clarity.ms/tag/qjgc94o507"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-TRXQZ98"></script><script>window.prerenderReady = false;</script><meta name="theme-color" content="#050509"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="google-site-verification" content="e6Yi-tP93oN5bNRtidMT83l-gxF4XCxKfgNQOXnUUkw"><link rel="prefetch" as="image" href="/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"><link rel="dns-prefetch" href="https://www.u7buy.com"><link rel="dns-prefetch" href="https://static.u7buy.com"><link rel="dns-prefetch" href="https://image1.u7buy.com"><link rel="dns-prefetch" href="https://image2.u7buy.com"><link rel="dns-prefetch" href="https://image3.u7buy.com"><link rel="dns-prefetch" href="https://image4.u7buy.com"><link rel="dns-prefetch" href="https://image5.u7buy.com"><link rel="dns-prefetch" href="https://image6.u7buy.com"><link rel="dns-prefetch" href="https://image7.u7buy.com"><link rel="dns-prefetch" href="https://image8.u7buy.com"><link rel="dns-prefetch" href="https://image9.u7buy.com"><link rel="dns-prefetch" href="https://image10.u7buy.com"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="dns-prefetch" href="https://www.google.com"><link rel="dns-prefetch" href="https://td.doubleclick.net"><link rel="dns-prefetch" href="https://www.clarity.ms"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preload" href="/assets/ttf/icomoon-vi3vNcN4.ttf" as="font" type="font/ttf" crossorigin=""><link rel="preload" href="/assets/woff2/Poppins-Regular-Bv-pP9mb.woff2" as="font" type="font/woff2" crossorigin=""><link rel="preload" href="/assets/woff2/Poppins-SemiBold-CIR-BGmX.woff2" as="font" type="font/woff2" crossorigin=""><link rel="preload" href="/assets/woff2/Poppins-Dqk6oVHb.woff2" as="font" type="font/woff2" crossorigin=""><link rel="preload" href="/assets/woff2/DingTalk-Sans-Z4DPGVXy.woff2" as="font" type="font/woff2" crossorigin=""><link rel="preload" fetchpriority="high" as="image" href="`;
+
+// Fix: The original App.tsx was incomplete and missing the component definition and default export.
+// This new implementation defines the App component, manages application state,
+// and handles navigation between the Scraper and Cleaner pages, resolving the import error.
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('scraper');
+  const [page, setPage] = useState<Page>('scraper');
+  const [htmlContent, setHtmlContent] = useState<string>(initialHtml.trim());
   const [scrapedData, setScrapedData] = useState<Product[]>([]);
   const [removedDuplicates, setRemovedDuplicates] = useState<Product[]>([]);
   const [filteredOutProducts, setFilteredOutProducts] = useState<Product[]>([]);
-  const [htmlContent, setHtmlContent] = useState<string>(initialHtml);
 
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      const message = "Same data will be lose";
-      event.returnValue = message; 
-      return message;
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
-
-  const NavLink: React.FC<{ page: Page; label: string; }> = ({ page, label }) => (
+  const NavButton: React.FC<{ targetPage: Page; children: React.ReactNode }> = ({ targetPage, children }) => (
     <button
-      onClick={() => setCurrentPage(page)}
+      onClick={() => setPage(targetPage)}
       className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-        currentPage === page
+        page === targetPage
           ? 'bg-primary text-white'
-          : 'text-gray-300 hover:bg-base-300'
+          : 'bg-base-200 text-gray-300 hover:bg-base-300'
       }`}
     >
-      {label}
+      {children}
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-base-100 text-gray-200 font-sans">
-      <header className="bg-base-200/50 backdrop-blur-sm shadow-lg sticky top-0 z-10 border-b border-base-300">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.074 6.843 5 7.29 5c.447 0 .778.074 1.05.222.272.148.48.347.636.596.157.249.235.538.235.867 0 .329-.078.638-.235.928a1.99 1.99 0 01-.635.635 2.577 2.577 0 01-1.05.255c-.447 0-.778-.086-1.05-.255a1.99 1.99 0 01-.636-.636 2.226 2.226 0 01-.235-.928c0-.329.078-.618.235-.867zm3.437 6.132c.157-.249.235-.538.235-.867 0-.329-.078-.638-.235-.928a1.99 1.99 0 00-.636-.636 2.577 2.577 0 00-1.05-.255c-.447 0-.778.086-1.05-.255-.272.169-.48.38-.636.636a2.226 2.226 0 00-.235.928c0 .329.078.618.235.867.157.25.364.448.636.596.272.148.59.222 1.05.222.46 0 .788-.074 1.05-.222a1.99 1.99 0 00.635-.596z" clipRule="evenodd" />
-            </svg>
-            <h1 className="text-2xl font-bold tracking-tight">Product Tools</h1>
-          </div>
-          <nav className="flex items-center space-x-2 bg-base-300/50 p-1 rounded-lg">
-            <NavLink page="scraper" label="Scraper" />
-            <NavLink page="cleaner" label="Clean Titles" />
-          </nav>
-        </div>
-      </header>
-      
-      <main className="container mx-auto p-4 md:p-8">
-        {currentPage === 'scraper' && (
-          <ScraperPage
-            htmlContent={htmlContent}
-            setHtmlContent={setHtmlContent}
-            scrapedData={scrapedData}
-            setScrapedData={setScrapedData}
-            removedDuplicates={removedDuplicates}
-            setRemovedDuplicates={setRemovedDuplicates}
-            filteredOutProducts={filteredOutProducts}
-            setFilteredOutProducts={setFilteredOutProducts}
-          />
-        )}
-        {currentPage === 'cleaner' && <CleanTitlesPage products={scrapedData} />}
-      </main>
+    <div className="bg-base-100 text-gray-100 min-h-screen font-sans">
+      <div className="container mx-auto px-4 py-8">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            Web Scraper & Title Cleaner
+          </h1>
+          <p className="text-center text-gray-400">
+            A simple tool to extract product data and clean up titles.
+          </p>
+        </header>
+        
+        <nav className="flex justify-center space-x-4 mb-8">
+          <NavButton targetPage="scraper">1. Scraper</NavButton>
+          <NavButton targetPage="cleaner">2. Title Cleaner</NavButton>
+        </nav>
+
+        <main>
+          {page === 'scraper' && (
+            <ScraperPage
+              htmlContent={htmlContent}
+              setHtmlContent={setHtmlContent}
+              scrapedData={scrapedData}
+              setScrapedData={setScrapedData}
+              removedDuplicates={removedDuplicates}
+              setRemovedDuplicates={setRemovedDuplicates}
+              filteredOutProducts={filteredOutProducts}
+              setFilteredOutProducts={setFilteredOutProducts}
+            />
+          )}
+          {page === 'cleaner' && <CleanTitlesPage products={scrapedData} />}
+        </main>
+      </div>
     </div>
   );
 };

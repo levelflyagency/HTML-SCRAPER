@@ -44,25 +44,47 @@ export const scrapeProductsFromHtml = (html: string): {
     
     const rawProducts: Product[] = [];
     
-    // This selector is tailored to the structure of the product cards in the initial HTML.
-    const productElements = doc.querySelectorAll('.col-sm-6.col-md-3.col-xs-12');
+    // Attempt to scrape with the first set of selectors (original structure)
+    let productElements = doc.querySelectorAll('.col-sm-6.col-md-3.col-xs-12');
+    if (productElements.length > 0) {
+      productElements.forEach(element => {
+        const titleElement = element.querySelector('.text-body1.text-word-break span');
+        const priceElement = element.querySelector('.text-body1.text-weight-medium');
+        const currencyElement = element.querySelector('.text-caption.q-ml-xs');
 
-    productElements.forEach(element => {
-      const titleElement = element.querySelector('.text-body1.text-word-break span');
-      const priceElement = element.querySelector('.text-body1.text-weight-medium');
-      const currencyElement = element.querySelector('.text-caption.q-ml-xs');
-
-      if (titleElement && priceElement && currencyElement) {
-        const title = titleElement.textContent?.trim() || 'No Title Found';
-        const priceText = priceElement.textContent?.trim();
-        const price = priceText ? parseFloat(priceText) : 0;
-        const currency = currencyElement.textContent?.trim() || 'N/A';
-        
-        if (!isNaN(price)) {
-          rawProducts.push({ title, price, currency });
+        if (titleElement && priceElement && currencyElement) {
+          const title = titleElement.textContent?.trim() || 'No Title Found';
+          const priceText = priceElement.textContent?.trim();
+          const price = priceText ? parseFloat(priceText) : 0;
+          const currency = currencyElement.textContent?.trim() || 'N/A';
+          
+          if (!isNaN(price)) {
+            rawProducts.push({ title, price, currency });
+          }
         }
-      }
-    });
+      });
+    }
+
+    // If the first set failed, try the second set of selectors (new structure)
+    if (rawProducts.length === 0) {
+      productElements = doc.querySelectorAll('a.tab1-item');
+      productElements.forEach(element => {
+        const titleElement = element.querySelector('.el-text.is-line-clamp');
+        const priceElement = element.querySelector('.item-money p:first-child');
+        const currencyElement = element.querySelector('.item-money p:nth-child(2)');
+
+        if (titleElement && priceElement) {
+          const title = titleElement.getAttribute('title')?.trim() || titleElement.textContent?.trim() || 'No Title Found';
+          const priceText = priceElement.textContent?.trim();
+          const price = priceText ? parseFloat(priceText) : 0;
+          const currency = currencyElement?.textContent?.trim() || 'USD'; // Defaulting as it's common
+          
+          if (!isNaN(price)) {
+            rawProducts.push({ title, price, currency });
+          }
+        }
+      });
+    }
 
     // Filter out products based on title prefixes or title length
     const filteredOutProducts: Product[] = [];
