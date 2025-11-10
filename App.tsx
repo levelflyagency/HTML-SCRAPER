@@ -1,15 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ScraperPage from './pages/ScraperPage';
 import CleanTitlesPage from './pages/CleanTitlesPage';
 import { Product } from './types';
 
 type Page = 'scraper' | 'cleaner';
 
+const initialHtml = `<div class="row g-col-gutter-30">
+  <div class="col-sm-6 col-md-3 col-xs-12">
+    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
+      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
+        <div data-v-1df071b5="" class="q-pa-md">
+          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
+            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68 | This is an example of a very long title that is definitely going to be more than 150 characters to properly test the new detection functionality we have just implemented.</span>
+          </div>
+        </div>
+      </a>
+      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
+        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
+          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
+          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
+        </a>
+      </div>
+    </div>
+  </div>
+   <div class="col-sm-6 col-md-3 col-xs-12">
+    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
+      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
+        <div data-v-1df071b5="" class="q-pa-md">
+          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
+            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68</span>
+          </div>
+        </div>
+      </a>
+      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
+        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
+          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
+          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-3 col-xs-12">
+    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
+      <a data-v-1df071b5="" href="/some-link-2" class="full-height column g-card-no-deco">
+        <div data-v-1df071b5="" class="q-pa-md">
+          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
+            <span data-v-1df071b5="">[ASIA/FULL ACCESS] DISCOUNT -33% | Maus, Blyskawica | Cred:6 160 000| A63</span>
+          </div>
+        </div>
+      </a>
+      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
+        <a data-v-1df071b5="" href="/some-link-2" class="q-ml-auto g-card-no-deco text-right">
+          <span data-v-1df071b5="" class="text-body1 text-weight-medium">17.17</span>
+          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>`;
+
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('scraper');
   const [scrapedData, setScrapedData] = useState<Product[]>([]);
   const [removedDuplicates, setRemovedDuplicates] = useState<Product[]>([]);
   const [filteredOutProducts, setFilteredOutProducts] = useState<Product[]>([]);
+  const [htmlContent, setHtmlContent] = useState<string>(initialHtml);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      const message = "Same data will be lose";
+      event.returnValue = message; 
+      return message;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const NavLink: React.FC<{ page: Page; label: string; }> = ({ page, label }) => (
     <button
@@ -44,6 +114,8 @@ const App: React.FC = () => {
       <main className="container mx-auto p-4 md:p-8">
         {currentPage === 'scraper' && (
           <ScraperPage
+            htmlContent={htmlContent}
+            setHtmlContent={setHtmlContent}
             scrapedData={scrapedData}
             setScrapedData={setScrapedData}
             removedDuplicates={removedDuplicates}

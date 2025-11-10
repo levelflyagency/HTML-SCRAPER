@@ -2,60 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { Product } from '../types';
 import { scrapeProductsFromHtml } from '../services/geminiService';
 
-const initialHtml = `<div class="row g-col-gutter-30">
-  <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68 | This is an example of a very long title that is definitely going to be more than 150 characters to properly test the new detection functionality we have just implemented.</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-   <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-1" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[EU] HALLOWEEN DISCOUNT -61% | ST-II, M48 Patton | Cred:6 160 000| E68</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-1" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">9.99</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-md-3 col-xs-12">
-    <div data-v-1df071b5="" class="full-height full-width relative-position bg-white bg-dark-black g-card-hover">
-      <a data-v-1df071b5="" href="/some-link-2" class="full-height column g-card-no-deco">
-        <div data-v-1df071b5="" class="q-pa-md">
-          <div data-v-1df071b5="" class="text-body1 text-word-break ellipsis-2-lines">
-            <span data-v-1df071b5="">[ASIA/FULL ACCESS] DISCOUNT -33% | Maus, Blyskawica | Cred:6 160 000| A63</span>
-          </div>
-        </div>
-      </a>
-      <div data-v-1df071b5="" class="q-px-md q-pb-md row items-center">
-        <a data-v-1df071b5="" href="/some-link-2" class="q-ml-auto g-card-no-deco text-right">
-          <span data-v-1df071b5="" class="text-body1 text-weight-medium">17.17</span>
-          <span data-v-1df071b5="" class="text-caption q-ml-xs">USD</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>`;
-
 const Spinner: React.FC = () => (
     <div className="flex justify-center items-center h-full">
       <svg className="animate-spin -ml-1 mr-3 h-10 w-10 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -76,6 +22,8 @@ const EmptyState: React.FC = () => (
 );
 
 interface ScraperPageProps {
+  htmlContent: string;
+  setHtmlContent: (html: string) => void;
   scrapedData: Product[];
   setScrapedData: (data: Product[]) => void;
   removedDuplicates: Product[];
@@ -84,8 +32,16 @@ interface ScraperPageProps {
   setFilteredOutProducts: (data: Product[]) => void;
 }
 
-const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, removedDuplicates, setRemovedDuplicates, filteredOutProducts, setFilteredOutProducts }) => {
-  const [htmlContent, setHtmlContent] = useState<string>(initialHtml);
+const ScraperPage: React.FC<ScraperPageProps> = ({ 
+  htmlContent, 
+  setHtmlContent, 
+  scrapedData, 
+  setScrapedData, 
+  removedDuplicates, 
+  setRemovedDuplicates, 
+  filteredOutProducts, 
+  setFilteredOutProducts 
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy All');
