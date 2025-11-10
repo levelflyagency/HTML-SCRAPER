@@ -51,10 +51,13 @@ export const scrapeProductsFromHtml = (html: string): {
       }
     });
 
-    // Filter out products based on title prefixes
+    // Filter out products based on title prefixes or title length
     const filteredOutProducts: Product[] = [];
     const productsAfterFiltering = rawProducts.filter(product => {
-        const shouldFilter = titlePrefixesToFilter.some(prefix => product.title.startsWith(prefix));
+        const startsWithPrefix = titlePrefixesToFilter.some(prefix => product.title.startsWith(prefix));
+        const isTooShort = product.title.length < 14;
+        const shouldFilter = startsWithPrefix || isTooShort;
+        
         if (shouldFilter) {
             filteredOutProducts.push(product);
         }
