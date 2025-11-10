@@ -134,14 +134,14 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
             value={htmlContent}
             onChange={(e) => setHtmlContent(e.target.value)}
             placeholder="Paste your HTML code here..."
-            className="w-full h-full min-h-[400px] lg:min-h-[600px] p-4 bg-base-200 border-2 border-base-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all duration-300 resize-none font-mono text-sm"
+            className="w-full h-full min-h-[400px] lg:min-h-[600px] p-4 bg-base-200 border-2 border-base-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-300 resize-none font-mono text-sm"
             />
         </div>
         <div className="flex space-x-4">
             <button
                 onClick={handleScrape}
                 disabled={isLoading}
-                className="flex-1 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
             >
                 {isLoading ? (
                     <>
@@ -163,7 +163,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
             </button>
                 <button
                 onClick={handleClear}
-                className="px-6 py-3 border border-base-300 text-base font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors"
+                className="px-6 py-3 border border-base-300 text-base font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
             >
                 Clear
             </button>
@@ -177,7 +177,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
             {scrapedData.length > 0 && (
             <button
                 onClick={handleCopyAll}
-                className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-base-300 transition-colors disabled:opacity-50"
+                className="px-4 py-2 border border-base-300 text-sm font-medium rounded-md text-gray-300 hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
                 disabled={copyButtonText === 'Copied!'}
             >
                 {copyButtonText}
@@ -187,7 +187,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
         {(scrapedData.length > 0 || removedDuplicates.length > 0 || filteredOutProducts.length > 0) && (
             <div className="grid grid-cols-4 gap-4 text-center p-4 bg-base-300/50 rounded-lg animate-fade-in">
                 <div>
-                    <p className="text-2xl lg:text-3xl font-bold text-brand-secondary">{scrapedData.length + removedDuplicates.length + filteredOutProducts.length}</p>
+                    <p className="text-2xl lg:text-3xl font-bold text-sky-400">{scrapedData.length + removedDuplicates.length + filteredOutProducts.length}</p>
                     <p className="text-xs text-gray-400 uppercase tracking-wider">Total Extracted</p>
                 </div>
                 <div>
@@ -270,7 +270,7 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
                 <h3 className="text-lg font-semibold text-gray-300 sticky top-0 bg-base-200/50 py-2">Prices</h3>
                 <ul className="space-y-2">
                     {scrapedData.map((product, index) => (
-                    <li key={index} className="bg-base-200 p-2 rounded text-sm border-l-4 border-brand-primary font-semibold">
+                    <li key={index} className="bg-base-200 p-2 rounded text-sm border-l-4 border-secondary font-semibold">
                         {product.price.toFixed(2)}
                     </li>
                     ))}

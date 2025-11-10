@@ -16,6 +16,19 @@ const titlePrefixesToFilter = [
   'NEW 50+ 20x Price for one',
   'Total 120x Accounts',
   'Unchained Ramirez - Fortnite',
+  'OFFER: 25x [LA] 10+ Skins',
+  'OFFER: 20x [EU] 10+ Skins',
+  'OFFER: 20x [EU] 20+ Skins',
+  '10x [EUW 30+ LVL] 10+ Skins',
+  '10x [EUW 30+ LVL] 25+ Skins',
+  '10x [EUW 30+ LVL] 50+ Skins',
+  '10x [EUW 30+ LVL] 100+ Skins',
+  '10x [NA 30+ LVL] 10+ Skins',
+  '10x [NA 30+ LVL] 25+ Skins',
+  '10x [EUNE 30+ LVL] 10+ Skins',
+  '10x [EUNE 30+ LVL] 25+ Skins',
+  '10x [EUNE 30+ LVL] 50+ Skins',
+  '10x [EUNE 30+ LVL] 100+ Skins',
 ];
 
 export const scrapeProductsFromHtml = (html: string): { 
