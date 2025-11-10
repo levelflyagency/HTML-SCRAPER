@@ -9,6 +9,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('scraper');
   const [scrapedData, setScrapedData] = useState<Product[]>([]);
   const [removedDuplicates, setRemovedDuplicates] = useState<Product[]>([]);
+  const [filteredOutProducts, setFilteredOutProducts] = useState<Product[]>([]);
 
   const NavLink: React.FC<{ page: Page; label: string; }> = ({ page, label }) => (
     <button
@@ -47,6 +48,8 @@ const App: React.FC = () => {
             setScrapedData={setScrapedData}
             removedDuplicates={removedDuplicates}
             setRemovedDuplicates={setRemovedDuplicates}
+            filteredOutProducts={filteredOutProducts}
+            setFilteredOutProducts={setFilteredOutProducts}
           />
         )}
         {currentPage === 'cleaner' && <CleanTitlesPage products={scrapedData} />}

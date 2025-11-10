@@ -80,15 +80,18 @@ interface ScraperPageProps {
   setScrapedData: (data: Product[]) => void;
   removedDuplicates: Product[];
   setRemovedDuplicates: (data: Product[]) => void;
+  filteredOutProducts: Product[];
+  setFilteredOutProducts: (data: Product[]) => void;
 }
 
-const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, removedDuplicates, setRemovedDuplicates }) => {
+const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, removedDuplicates, setRemovedDuplicates, filteredOutProducts, setFilteredOutProducts }) => {
   const [htmlContent, setHtmlContent] = useState<string>(initialHtml);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [copyButtonText, setCopyButtonText] = useState<string>('Copy All');
   const [notification, setNotification] = useState<string | null>(null);
   const [showDuplicates, setShowDuplicates] = useState<boolean>(false);
+  const [showFiltered, setShowFiltered] = useState<boolean>(false);
 
   const handleScrape = useCallback(async () => {
     if (!htmlContent.trim()) {
@@ -99,22 +102,32 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
     setError(null);
     setScrapedData([]);
     setRemovedDuplicates([]);
+    setFilteredOutProducts([]);
     setShowDuplicates(false);
+    setShowFiltered(false);
     setNotification(null);
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
     try {
-      const { products, duplicatesRemovedCount, removedDuplicates } = scrapeProductsFromHtml(htmlContent);
+      const { products, duplicatesRemovedCount, removedDuplicates, filteredOutCount, filteredOutProducts } = scrapeProductsFromHtml(htmlContent);
       setScrapedData(products);
       setRemovedDuplicates(removedDuplicates);
+      setFilteredOutProducts(filteredOutProducts);
 
+      const messages = [];
+      if (filteredOutCount > 0) {
+        messages.push(`${filteredOutCount} generic item(s) automatically removed.`);
+      }
       if (duplicatesRemovedCount > 0) {
-        const message = `${duplicatesRemovedCount} duplicate product(s) found and removed.`;
-        setNotification(message);
+        messages.push(`${duplicatesRemovedCount} duplicate(s) found and removed.`);
+      }
+      
+      if (messages.length > 0) {
+        setNotification(messages.join(' '));
       }
 
-      if (products.length === 0) {
+      if (products.length === 0 && filteredOutProducts.length === 0) {
         setError("No products could be extracted. Check the HTML structure and selectors.");
       }
     } catch (e) {
@@ -123,15 +136,17 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
     } finally {
       setIsLoading(false);
     }
-  }, [htmlContent, setScrapedData, setRemovedDuplicates]);
+  }, [htmlContent, setScrapedData, setRemovedDuplicates, setFilteredOutProducts]);
 
   const handleClear = () => {
     setHtmlContent('');
     setScrapedData([]);
     setRemovedDuplicates([]);
+    setFilteredOutProducts([]);
     setError(null);
     setNotification(null);
     setShowDuplicates(false);
+    setShowFiltered(false);
   }
 
   const handleCopyAll = () => {
@@ -213,35 +228,51 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
             </button>
             )}
         </div>
-        {(scrapedData.length > 0 || removedDuplicates.length > 0) && (
-            <div className="grid grid-cols-3 gap-4 text-center p-4 bg-base-300/50 rounded-lg animate-fade-in">
+        {(scrapedData.length > 0 || removedDuplicates.length > 0 || filteredOutProducts.length > 0) && (
+            <div className="grid grid-cols-4 gap-4 text-center p-4 bg-base-300/50 rounded-lg animate-fade-in">
                 <div>
-                    <p className="text-2xl lg:text-3xl font-bold text-brand-secondary">{scrapedData.length + removedDuplicates.length}</p>
+                    <p className="text-2xl lg:text-3xl font-bold text-brand-secondary">{scrapedData.length + removedDuplicates.length + filteredOutProducts.length}</p>
                     <p className="text-xs text-gray-400 uppercase tracking-wider">Total Extracted</p>
                 </div>
                 <div>
                     <p className="text-2xl lg:text-3xl font-bold text-green-400">{scrapedData.length}</p>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider">Unique Items</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Unique</p>
                 </div>
                 <div>
                     <p className="text-2xl lg:text-3xl font-bold text-amber-400">{removedDuplicates.length}</p>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider">Duplicates Removed</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Duplicates</p>
+                </div>
+                <div>
+                    <p className="text-2xl lg:text-3xl font-bold text-rose-400">{filteredOutProducts.length}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">Auto-Removed</p>
                 </div>
             </div>
         )}
         {notification && (
             <div className="bg-green-800/30 border border-green-500/50 text-green-300 px-4 py-2 rounded-lg relative flex justify-between items-center text-sm" role="alert">
-            <span>{notification}</span>
-            {removedDuplicates.length > 0 && (
-                <button 
-                onClick={() => setShowDuplicates(s => !s)}
-                className="ml-4 px-3 py-1 bg-green-600/50 hover:bg-green-500/50 rounded-md text-white font-semibold text-xs"
-                aria-controls="duplicates-section"
-                aria-expanded={showDuplicates}
-                >
-                {showDuplicates ? 'Hide' : 'View'} Duplicates
-                </button>
-            )}
+                <span>{notification}</span>
+                <div className="flex space-x-2">
+                    {filteredOutProducts.length > 0 && (
+                        <button 
+                        onClick={() => setShowFiltered(s => !s)}
+                        className="px-3 py-1 bg-rose-600/50 hover:bg-rose-500/50 rounded-md text-white font-semibold text-xs"
+                        aria-controls="filtered-section"
+                        aria-expanded={showFiltered}
+                        >
+                        {showFiltered ? 'Hide' : 'View'} Removed
+                        </button>
+                    )}
+                    {removedDuplicates.length > 0 && (
+                        <button 
+                        onClick={() => setShowDuplicates(s => !s)}
+                        className="px-3 py-1 bg-amber-600/50 hover:bg-amber-500/50 rounded-md text-white font-semibold text-xs"
+                        aria-controls="duplicates-section"
+                        aria-expanded={showDuplicates}
+                        >
+                        {showDuplicates ? 'Hide' : 'View'} Duplicates
+                        </button>
+                    )}
+                </div>
             </div>
         )}
         <div className="bg-base-200/50 p-4 rounded-lg flex-grow border border-base-300 min-h-[400px] lg:min-h-[520px]">
@@ -294,6 +325,23 @@ const ScraperPage: React.FC<ScraperPageProps> = ({ scrapedData, setScrapedData, 
             <EmptyState />
             )}
         </div>
+        {showFiltered && filteredOutProducts.length > 0 && (
+            <div id="filtered-section" className="bg-base-200/50 p-4 rounded-lg border border-base-300 animate-fade-in">
+            <h3 className="text-lg font-semibold text-rose-400 mb-3">Auto-Removed Items ({filteredOutProducts.length})</h3>
+            <div className="max-h-40 overflow-y-auto pr-2">
+                <ul className="space-y-2">
+                    {filteredOutProducts.map((product, index) => (
+                        <li key={`filt-${index}`} className="bg-base-200 p-2 rounded text-sm text-gray-500 line-through flex justify-between items-center">
+                            <span className="truncate pr-4" title={product.title}>{product.title}</span>
+                            <span className="font-semibold text-gray-500 whitespace-nowrap">
+                                {product.price.toFixed(2)}
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            </div>
+        )}
         {showDuplicates && removedDuplicates.length > 0 && (
             <div id="duplicates-section" className="bg-base-200/50 p-4 rounded-lg border border-base-300 animate-fade-in">
             <h3 className="text-lg font-semibold text-amber-400 mb-3">Removed Duplicates ({removedDuplicates.length})</h3>
