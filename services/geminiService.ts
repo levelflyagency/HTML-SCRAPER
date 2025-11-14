@@ -1,3 +1,5 @@
+// FIX: Import GoogleGenAI and Type for Gemini API usage.
+import { GoogleGenAI, Type } from "@google/genai";
 import { Product } from '../types';
 
 // List of title prefixes to automatically filter out.
@@ -72,16 +74,44 @@ export const scrapeProductsFromHtml = (html: string): {
         const titleElement = element.querySelector('.el-text.is-line-clamp');
         const priceElement = element.querySelector('.item-money p:first-child');
         const currencyElement = element.querySelector('.item-money p:nth-child(2)');
+        const platformElement = element.querySelector('.item-tag div:first-child');
 
         if (titleElement && priceElement) {
           const title = titleElement.getAttribute('title')?.trim() || titleElement.textContent?.trim() || 'No Title Found';
           const priceText = priceElement.textContent?.trim();
           const price = priceText ? parseFloat(priceText) : 0;
           const currency = currencyElement?.textContent?.trim() || 'USD'; // Defaulting as it's common
+          const platform = platformElement?.textContent?.trim() || undefined;
           
           if (!isNaN(price)) {
-            rawProducts.push({ title, price, currency });
+            rawProducts.push({ title, price, currency, platform });
           }
+        }
+      });
+    }
+
+    // If the first two sets failed, try the third set for review items
+    if (rawProducts.length === 0) {
+      productElements = doc.querySelectorAll('div.tab2-item');
+      productElements.forEach(element => {
+        const pElements = element.querySelectorAll('p');
+        // In the review item structure, the product title is the last <p> tag.
+        const titleElement = pElements.length > 1 ? pElements[pElements.length - 1] : null;
+
+        if (titleElement) {
+          const title = titleElement.textContent?.trim() || 'No Title Found';
+          const price = 0; // No price in review items
+          const currency = 'N/A'; // No currency
+          
+          let platform: string | undefined = undefined;
+          const lowerCaseTitle = title.toLowerCase();
+          const platforms: string[] = [];
+          if (lowerCaseTitle.includes('pc')) platforms.push('PC');
+          if (lowerCaseTitle.includes('xbox')) platforms.push('XBOX');
+          if (lowerCaseTitle.includes('psn') || lowerCaseTitle.includes('ps')) platforms.push('PS');
+          if (platforms.length > 0) platform = platforms.join('/');
+
+          rawProducts.push({ title, price, currency, platform });
         }
       });
     }
@@ -124,5 +154,95 @@ export const scrapeProductsFromHtml = (html: string): {
         throw new Error(`Failed to parse HTML content: ${error.message}`);
     }
     throw new Error("An unknown error occurred while parsing HTML.");
+  }
+};
+
+// FIX: Add the missing scrapeProductsWithGemini function to be used by ScraperPageV2.
+export const scrapeProductsWithGemini = async (html: string): Promise<{ products: Product[] }> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  const model = "gemini-2.5-pro";
+
+  const prompt = `
+    Analyze the following HTML to extract product information. The HTML could contain either direct product listings or a list of seller reviews that mention products.
+
+    From each item, extract the following details:
+    - title: The full title of the product. For review items, this is the title of the product being reviewed.
+    - price: The numerical price. If no price is found (like in a review item), use 0.
+    - currency: The currency code (e.g., USD). If no currency is found, use "N/A".
+    - platform: The gaming platform if specified (e.g., PC, XBOX, PS, PSN). This may be in a dedicated tag or part of the title. If not found, omit this field.
+
+    Pay attention to two main structures:
+    1. Product listings, often in 'a.tab1-item' elements. These will have titles, prices, and platforms.
+    2. Review listings, often in 'div.tab2-item' elements. These will have a product title (usually the last <p> tag) but no price.
+
+    Return the data as a JSON object with a single "products" key, which is an array of product objects.
+    Here is the HTML content:
+    ${html}
+  `;
+
+  const responseSchema = {
+    type: Type.OBJECT,
+    properties: {
+      products: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            title: {
+              type: Type.STRING,
+              description: "The full title of the product.",
+            },
+            price: {
+              type: Type.NUMBER,
+              description: "The price of the product as a number.",
+            },
+            currency: {
+              type: Type.STRING,
+              description: "The currency of the price (e.g., USD).",
+            },
+            platform: {
+              type: Type.STRING,
+              description: "The gaming platform, if specified (e.g., PC, XBOX, PSN). Optional.",
+            },
+          },
+          required: ["title", "price", "currency"],
+        },
+      },
+    },
+    required: ["products"],
+  };
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: responseSchema,
+      },
+    });
+    
+    const jsonString = response.text.trim();
+    if (!jsonString) {
+      console.warn("Gemini API returned an empty response.");
+      return { products: [] };
+    }
+
+    const parsed = JSON.parse(jsonString);
+
+    if (parsed && Array.isArray(parsed.products)) {
+        return { products: parsed.products };
+    } else {
+        console.error("Parsed JSON does not match expected schema:", parsed);
+        throw new Error("Failed to parse products from AI response. The structure was incorrect.");
+    }
+
+  } catch (error) {
+    console.error("Error calling Gemini API:", error);
+    if (error instanceof Error) {
+        throw new Error(`Error from Gemini API: ${error.message}`);
+    }
+    throw new Error("An unknown error occurred while scraping with Gemini.");
   }
 };

@@ -31,9 +31,9 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
   const handleCopy = (data: Product[], setText: React.Dispatch<React.SetStateAction<string>>) => {
     if (data.length === 0) return;
 
-    const header = "Title\tPrice\n";
+    const header = "Title\tPlatform\tPrice\n";
     const tsvContent = data
-      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.price.toFixed(2)}`)
+      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.platform || ''}\t${p.price.toFixed(2)}`)
       .join('\n');
     
     const fullContent = header + tsvContent;
@@ -61,7 +61,8 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
 
   const ListHeader: React.FC = () => (
     <div className="grid grid-cols-12 gap-4 px-3 pb-2 border-b border-base-300 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        <div className="col-span-10">Product Title</div>
+        <div className="col-span-8">Product Title</div>
+        <div className="col-span-2 text-center">Platform</div>
         <div className="col-span-2 text-right">Price</div>
     </div>
   );
@@ -98,7 +99,7 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
                     }`}
                     title={product.title}
                   >
-                    <div className="col-span-10 flex items-center space-x-3 min-w-0">
+                    <div className="col-span-8 flex items-center space-x-3 min-w-0">
                         {isTitleLong && (
                         <div className="flex-shrink-0" title="Title is longer than 150 characters.">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
@@ -107,6 +108,9 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
                         </div>
                         )}
                         <span className="truncate">{product.title}</span>
+                    </div>
+                    <div className="col-span-2 text-center">
+                       <span className="bg-base-300/80 rounded-full px-3 py-1 text-xs font-medium text-gray-300">{product.platform || 'N/A'}</span>
                     </div>
                     <div className="col-span-2 text-right font-mono text-gray-300">
                         {product.price.toFixed(2)}
@@ -139,8 +143,11 @@ const CleanTitlesPage: React.FC<CleanTitlesPageProps> = ({ products }) => {
                     className="grid grid-cols-12 gap-4 items-center bg-base-200 p-3 rounded text-sm border-l-4 transition-colors hover:bg-base-300/50 border-secondary"
                     title={product.title}
                   >
-                    <div className="col-span-10 flex items-center space-x-3 min-w-0">
+                    <div className="col-span-8 flex items-center space-x-3 min-w-0">
                       <span className="truncate">{product.title}</span>
+                    </div>
+                     <div className="col-span-2 text-center">
+                       <span className="bg-base-300/80 rounded-full px-3 py-1 text-xs font-medium text-gray-300">{product.platform || 'N/A'}</span>
                     </div>
                     <div className="col-span-2 text-right font-mono text-gray-300">
                       {product.price.toFixed(2)}

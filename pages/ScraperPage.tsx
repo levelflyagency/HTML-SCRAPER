@@ -108,9 +108,9 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
   const handleCopyAll = () => {
     if (scrapedData.length === 0) return;
   
-    const header = "Title\tPrice\n";
+    const header = "Title\tPlatform\tPrice\n";
     const tsvContent = scrapedData
-      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.price.toFixed(2)}`)
+      .map(p => `${p.title.replace(/\s+/g, ' ')}\t${p.platform || ''}\t${p.price.toFixed(2)}`)
       .join('\n');
     
     const fullContent = header + tsvContent;
@@ -239,44 +239,44 @@ const ScraperPage: React.FC<ScraperPageProps> = ({
                 {error}
             </div>
             ) : scrapedData.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 h-full">
                 <div className="space-y-2 h-full overflow-y-auto pr-2">
-                <h3 className="text-lg font-semibold text-gray-300 sticky top-0 bg-base-200/50 py-2">Titles</h3>
-                <ul className="space-y-2">
-                    {scrapedData.map((product, index) => {
-                    const isTitleLong = product.title.length > 150;
-                    return (
-                        <li
-                        key={index}
-                        className={`bg-base-200 p-2 rounded text-sm border-l-4 flex items-center space-x-2 ${
-                            isTitleLong ? 'border-amber-500' : 'border-base-300'
-                        }`}
-                        title={product.title}
-                        >
-                        {isTitleLong && (
-                            <div className="flex-shrink-0" title="Title is longer than 150 characters.">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
+                    <div className="grid grid-cols-12 gap-4 px-2 pb-2 border-b border-base-300 text-sm font-semibold text-gray-400 sticky top-0 bg-base-200/50 py-2">
+                        <div className="col-span-8">Title</div>
+                        <div className="col-span-2 text-center">Platform</div>
+                        <div className="col-span-2 text-right">Price</div>
+                    </div>
+                    <ul className="space-y-2">
+                        {scrapedData.map((product, index) => {
+                        const isTitleLong = product.title.length > 150;
+                        return (
+                            <li
+                            key={index}
+                            className={`grid grid-cols-12 gap-4 items-center bg-base-200 p-2 rounded text-sm border-l-4 ${
+                                isTitleLong ? 'border-amber-500' : 'border-base-300'
+                            }`}
+                            title={product.title}
+                            >
+                            <div className="col-span-8 flex items-center space-x-2 min-w-0">
+                                {isTitleLong && (
+                                    <div className="flex-shrink-0" title="Title is longer than 150 characters.">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    </div>
+                                )}
+                                <span className="truncate">{product.title}</span>
                             </div>
-                        )}
-                        <span className="truncate">{product.title}</span>
-                        </li>
-                    );
-                    })}
-                </ul>
+                            <div className="col-span-2 text-center">
+                                <span className="bg-base-300/80 rounded-full px-3 py-1 text-xs font-medium text-gray-300">{product.platform || 'N/A'}</span>
+                            </div>
+                            <div className="col-span-2 text-right font-mono font-semibold text-secondary">
+                                {product.price.toFixed(2)}
+                            </div>
+                            </li>
+                        );
+                        })}
+                    </ul>
                 </div>
-                <div className="space-y-2 h-full overflow-y-auto pr-2">
-                <h3 className="text-lg font-semibold text-gray-300 sticky top-0 bg-base-200/50 py-2">Prices</h3>
-                <ul className="space-y-2">
-                    {scrapedData.map((product, index) => (
-                    <li key={index} className="bg-base-200 p-2 rounded text-sm border-l-4 border-secondary font-semibold">
-                        {product.price.toFixed(2)}
-                    </li>
-                    ))}
-                </ul>
-                </div>
-            </div>
             ) : (
             <EmptyState />
             )}
