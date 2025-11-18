@@ -1,97 +1,168 @@
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, Wand2, Eraser, FileCode, BrainCircuit } from 'lucide-react';
+
 import ScraperPage from './pages/ScraperPage';
 import CleanTitlesPage from './pages/CleanTitlesPage';
 import TitleBeautifierPage from './pages/TitleBeautifierPage';
-import { Product } from './types';
 import ScraperPageV2 from './pages/ScraperPageV2';
+import { Product } from './types';
 
 type Page = 'scraper' | 'scraper-v2' | 'cleaner' | 'beautifier';
 
-const initialHtml = `<html class="dark" lang="en"><head><style>body {transition: opacity ease-in 0.2s; } 
-body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
-</style><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, viewport-fit=cover"><script async="" src="https://scripts.clarity.ms/0.8.40/clarity.js"></script><script async="" src="https://www.clarity.ms/tag/p4v6lgl3ct?ref=gtm2"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=AW-999556424&amp;cx=c&amp;gtm=4e5bc1h1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/destination?id=G-1KFBC8P097&amp;cx=c&amp;gtm=4e5bc1h1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/destination?id=AW-AW-999556424&amp;cx=c&amp;gtm=4e5bc1h1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=AW-686861150&amp;cx=c&amp;gtm=4e5bc1h1"></script><script type="text/javascript" async="" src="https://cdn-cookieyes.com/client_data/1fa326f55c0421393eeb988f/script.js"></script><script type="importmap">{"imports":{"#entry":"/_nuxt/BqwuFSHZ.js"}}</script><link rel="preconnect" href="https://o4510073836797952.ingest.us.sentry.io"><link rel="stylesheet" href="/_nuxt/entry.CzRg9xge.css" crossorigin=""><link rel="preload" href="/fonts/poppins/poppins-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high"><link rel="preload" href="/fonts/dingTalk/dingtalk-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="low"><link rel="preload" href="/fonts/icon/icomoon.woff" as="font" type="font/woff" crossorigin="anonymous" fetchpriority="low"><link rel="modulepreload" as="script" crossorigin="" href="/_nuxt/BqwuFSHZ.js"><link rel="preload" as="font" crossorigin="" href="/fonts/icon/icomoon.woff"><link rel="dns-prefetch" href="https://static.u7buy.com"><link rel="dns-prefetch" href="https://image8.u7buy.com"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/B997vKAJ.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/B-_EObrF.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/home-page-search.64253KVr.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-scrollbar.BJ3LUNbp.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.DtDx97kw.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-dialog.dAROlf2c.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DJ8lrBh6.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BYESLJ0R.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BLC1nh7E.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/C9VgYZWV.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DTB2SIPv.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/activity-entrance-pop.N-baBloT.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/dialog-skeleton.BKv07tu7.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DrosRmSC.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CuomRYvU.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DxRKkA4s.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/1uLI9Ssu.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.BuJcZjC5.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-tag.D8JDhY_M.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-form.DSpPxwr9.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-select.DnI_kZDb.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-popper.D3HGoVZ7.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/m-select.BbtluWne.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/IgfiWeGy.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BV4w1RHW.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CoilBZMZ.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BqzuzvdL.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BAZNUMGo.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CkAPvf3r.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/yknuVvVW.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/Buv1s_68.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/EX8M9kXQ.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BVa0n4_R.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DuF8jCCm.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DCmXHVVD.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/gpMd4w_7.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DdzjG4pt.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/pc-cart-popup.s3ICL0hu.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-input-number.CrR_lKtf.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/Lhlv2TGa.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CZIAtHf-.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BqjkW9M9.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CNaR3xxG.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/chat.LVuUzFzH.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/el-empty.v64XBhKh.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CvP8haPQ.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/ByTgPRmE.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/2SBy8p3b.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/notification.QkAhkwW8.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/BQIk7ckL.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.DEzxk2oz.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.CRZIqkVP.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.CrDV_bKe.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/ugc-submenu-new.CkXHSpEz.css"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/status-dialog.CoM_SStT.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CZT0Zghr.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/DNNi-onp.js"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/CfrFV9Sc.js"><link rel="prefetch" as="style" crossorigin="" href="/_nuxt/index.BLyHj16N.css"><link rel="prefetch" as="script" crossorigin="" href="/_nuxt/NK84gPb5.js"><meta name="theme-color" content="#050509"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="google-site-verification" content="e6Yi-tP93oN5bNRtidMT83l-gxF4XCxKfgNQOXnUUkw"><meta name="robots" content="index, follow"><script>
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-              'app_version': 'new_app',
-              'app_environment': 'migration_test'
-            });
-          </script><script>window.prerenderReady = false;</script><script type="module" src="/_nuxt/BqwuFSHZ.js" crossorigin=""></script><script>"use strict";(()=>{const t=window,e=document.documentElement,c=["dark","light"],n=getStorageValue("localStorage","nuxt-color-mode")||"system";let i=n==="system"?u():n;const r=e.getAttribute("data-color-mode-forced");r&&(i=r),l(i),t["__NUXT_COLOR_MODE__"]={preference:n,value:i,getColorScheme:u,addColorScheme:l,removeColorScheme:d};function l(o){const s=""+o+"",a="";e.classList?e.classList.add(s):e.className+=" "+s,a&&e.setAttribute("data-"+a,o)}function d(o){const s=""+o+"",a="";e.classList?e.classList.remove(s):e.className=e.className.replace(new RegExp(s,"g"),""),a&&e.removeAttribute("data-"+a)}function f(o){return t.matchMedia("(prefers-color-scheme"+o+")")}function u(){if(t.matchMedia&&f("").media!=="not all"){for(const o of c)if(f(":"+o).matches)return o}return"light"}})();function getStorageValue(t,e){switch(t){case"localStorage":return window.localStorage.getItem(e);case"sessionStorage":return window.sessionStorage.getItem(e);case"cookie":return getCookie(e);default:return null}}function getCookie(t){const c=("; "+window.document.cookie).split("; "+t+"=");if(c.length===2)return c.pop()?.split(";").shift()}</script><meta name="sentry-trace" content="3ff7345472054f23a337488463f7d15e-bf6620fdf23d732f-1">
-<meta name="baggage" content="sentry-environment=production,sentry-public_key=3713e51c8739e42d6ae57c7270effbf9,sentry-trace_id=3ff7345472054f23a337488463f7d15e,sentry-org_id=4510073836797952,sentry-sampled=true,sentry-sample_rand=0.25173178424542697,sentry-sample_rate=1"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/Bbp20_hD.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-popper.D3HGoVZ7.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/KqrDVH2m.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.Q2yib7qp.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/C41CnrpB.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-scrollbar.BJ3LUNbp.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-select.DnI_kZDb.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.BEU7rJSE.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-tag.D8JDhY_M.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/ko7uFN4v.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-text.DMU-l2EM.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/ksCIk4ND.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/table-pagination.CiiF09X0.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/BgrPJ2UW.js"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/Bk1V_SdM.js"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/BjHD0-2M.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-tabs.VhRmQ28I.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/C0Ijmd8l.js"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/BMTw2lbw.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-radio.B3vrGeKF.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.DncsHOsT.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/CzL4Zvrp.js"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/DaEn_08N.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-collapse.DlIOi2Ra.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-dialog.dAROlf2c.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.DtDx97kw.css"><link rel="modulepreload" as="script" crossorigin="" href="https://www.u7buy.com/_nuxt/BUo2HVDY.js"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/_id_.D_U1zO_G.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-tooltip.tn0RQdqM.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-radio-group.BzMpJalG.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-empty.v64XBhKh.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/chat.LVuUzFzH.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/notification.QkAhkwW8.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.BLyHj16N.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/el-form.DSpPxwr9.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/m-select.BbtluWne.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/index.BuJcZjC5.css"><link rel="stylesheet" crossorigin="" href="https://www.u7buy.com/_nuxt/status-dialog.CoM_SStT.css"><link href="https://www.clarity.ms/tag/undefined" rel="preload" crossorigin="anonymous" referrerpolicy="no-referrer" fetchpriority="low" as="script"><link href="https://www.googletagmanager.com/gtm.js?id=GTM-TRXQZ98" rel="preload" crossorigin="anonymous" referrerpolicy="no-referrer" fetchpriority="low" as="script"><script defer="" fetchpriority="low" crossorigin="anonymous" referrerpolicy="no-referrer" src="https://www.clarity.ms/tag/undefined" data-onload="" data-onerror="" data-hid="clarity"></script><script defer="" fetchpriority="low" crossorigin="anonymous" referrerpolicy="no-referrer" src="https://www.googletagmanager.com/gtm.js?id=GTM-TRXQZ98" data-onload="" data-onerror="" data-hid="googleTagManager"></script><style type="text/css">
-.g-btn-wrapper[data-v-5e610566] {
-  display: inline-block;
-}
-</style><script src="https://accounts.google.com/gsi/client" async="" defer=""></script><title>U7BUY - Trusted Pioneer in Global Digital World</title><meta name="description" content="U7BUY enables safe and easy connections for buyers and sellers, diverse offers of top up, game keys, in game service and gift cards. Efficient support escorts you since FC 26."><meta property="og:description" content="U7BUY enables safe and easy connections for buyers and sellers, diverse offers of top up, game keys, in game service and gift cards. Efficient support escorts you since FC 26."><meta property="og:title" content="U7BUY - Trusted Pioneer in Global Digital World"><meta property="og:image" content="https://static.u7buy.com/assets/images-new/logo/u7buy-512.webp"><meta property="og:url" content="https://www.u7buy.com/seller/1965875129555955713"><meta property="og:type" content="website"><meta property="og:site_name" content="U7BUY"><link rel="shortcut icon" type="image/x-icon" href="https://static.u7buy.com/assets/images-new/logo/favicon.ico"><link rel="apple-touch-icon" type="image/png" sizes="48x48" href="https://static.u7buy.com/assets/images-new/logo/u7buy-48.webp"><link rel="apple-touch-icon" type="image/png" sizes="114x114" href="https://static.u7buy.com/assets/images-new/logo/u7buy-114.webp"><link rel="apple-touch-icon" type="image/png" sizes="144x144" href="https://static.u7buy.com/assets/images-new/logo/u7buy-144.webp"><link rel="apple-touch-icon" type="image/png" sizes="192x192" href="https://static.u7buy.com/assets/images-new/logo/u7buy-192.webp"><link rel="apple-touch-icon" type="image/png" sizes="512x512" href="https://static.u7buy.com/assets/images-new/logo/u7buy-512.webp"><link rel="canonical" href="https://www.u7buy.com/seller/1965875129555955713"><link rel="alternate" hreflang="x-default" href="https://www.u7buy.com/seller/1965875129555955713"><link rel="alternate" hreflang="ar" href="https://www.u7buy.com/ar/seller/1965875129555955713"><link rel="alternate" hreflang="de" href="https://www.u7buy.com/de/seller/1965875129555955713"><link rel="alternate" hreflang="en" href="https://www.u7buy.com/seller/1965875129555955713"><link rel="alternate" hreflang="es" href="https://www.u7buy.com/es/seller/1965875129555955713"><link rel="alternate" hreflang="fr" href="https://www.u7buy.com/fr/seller/1965875129555955713"><link rel="alternate" hreflang="id" href="https://www.u7buy.com/id/seller/1965875129555955713"><link rel="alternate" hreflang="it" href="https://www.u7buy.com/it/seller/1965875129555955713"><link rel="alternate" hreflang="nl" href="https://www.u7buy.com/nl/seller/1965875129555955713"><link rel="alternate" hreflang="pl" href="https://www.u7buy.com/pl/seller/1965875129555955713"><link rel="alternate" hreflang="pt" href="https://www.u7buy.com/pt/seller/1965875129555955713"><link rel="alternate" hreflang="ro" href="https://www.u7buy.com/ro/seller/1965875129555955713"><style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:"Roboto-Regular",arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height linear .2s;transition:height linear .2s}.P1ekSe-ZMv3u>div:nth-child(1){background-color:#1a73e8!important;-webkit-transition:width linear .3s;transition:width linear .3s}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:"Google Sans",arial,sans-serif;font-size:14px;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:14px;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:11px;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:"Google Sans",arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:hover,.nsm7Bb-HzV7m-LgbsSe:focus{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:"Roboto";font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link id="googleidentityservice" type="text/css" media="all" href="https://accounts.google.com/gsi/style" rel="stylesheet"><meta http-equiv="origin-trial" content="A8o5T4MyEkRZqLA9WeG2XTFdV5tsX2Prg85xyQ+RL1btVuybB1K/EQ+7JUsPK+J32oBMTnsoF9B4A+qTlL6efgQAAABweyJvcmlnaW4iOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkZlZENtQnV0dG9uTW9kZSIsImV4cGlyeSI6MTc0NDY3NTIwMCwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><script src="https://cdn-cookieyes.com/client_data/1fa326f55c0421393eeb988f/banner.js" async="" id="cookieyes-banner"></script><script type="text/javascript" async="" src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/686861150/?random=1763080187421&amp;cv=11&amp;fst=1763080187421&amp;bg=ffffff&amp;guid=ON&amp;async=1&amp;en=gtag.config&amp;gtm=45be5bc1h1v9103507351z89119249651za200zb9119249651zd9119249651xec&amp;gcd=13r3r3r3r5l1&amp;dma=0&amp;tag_exp=103116026~103200004~104527906~104528500~104684208~104684211~115583767~115938466~115938469~116194002~116217636~116217638~116251935~116251937~116474637&amp;u_w=1920&amp;u_h=1080&amp;url=https%3A%2F%2Fwww.u7buy.com%2Fseller%2F1965875129555955713&amp;frm=0&amp;tiba=U7BUY%20-%20Trusted%20Pioneer%20in%20Global%20Digital%20World&amp;did=dY2Q2ZW&amp;gdid=dY2Q2ZW&amp;hn=www.googleadservices.com&amp;npa=0&amp;pscdl=noapi&amp;auid=1508717208.1763080188&amp;uaa=x86&amp;uab=64&amp;uafvl=Chromium%3B142.0.7444.163%7CGoogle%2520Chrome%3B142.0.7444.163%7CNot_A%2520Brand%3B99.0.0.0&amp;uamb=0&amp;uam=&amp;uap=Windows&amp;uapv=19.0.0&amp;uaw=0&amp;_tu=CA&amp;data=event%3Dgtag.config&amp;rfmt=3&amp;fmt=4"></script><script type="text/javascript" async="" src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/AW-999556424/?random=1763080187639&amp;cv=11&amp;fst=1763080187639&amp;bg=ffffff&amp;guid=ON&amp;async=1&amp;gtm=45be5bc1h1z89119249651za200zb9119249651zd9119249651xea&amp;gcd=13r3r3r3r5l1&amp;dma=0&amp;tag_exp=103116026~103200004~104527906~104528500~104684208~104684211~115583767~115938466~115938469~116217636~116217638~116474637&amp;u_w=1920&amp;u_h=1080&amp;url=https%3A%2F%2Fwww.u7buy.com%2Fseller%2F1965875129555955713&amp;frm=0&amp;tiba=U7BUY%20-%20Trusted%20Pioneer%20in%20Global%20Digital%20World&amp;did=dY2Q2ZW&amp;gdid=dY2Q2ZW&amp;hn=www.googleadservices.com&amp;npa=0&amp;pscdl=noapi&amp;auid=1508717208.1763080188&amp;uaa=x86&amp;uab=64&amp;uafvl=Chromium%3B142.0.7444.163%7CGoogle%2520Chrome%3B142.0.7444.163%7CNot_A%2520Brand%3B99.0.0.0&amp;uamb=0&amp;uam=&amp;uap=Windows&amp;uapv=19.0.0&amp;uaw=0&amp;_tu=CA&amp;data=ads_data_redaction%3Dfalse&amp;rfmt=3&amp;fmt=4"></script><script type="text/javascript" async="" src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/999556424/?random=1763080188602&amp;cv=11&amp;fst=1763080188602&amp;bg=ffffff&amp;guid=ON&amp;async=1&amp;en=gtag.config&amp;gtm=45be5bc1h1v9103769797z89119249651za200zb9119249651zd9119249651xec&amp;gcd=13r3r3r3r5l1&amp;dma=0&amp;tag_exp=103116026~103200004~104527906~104528501~104684208~104684211~105322302~105391253~115583767~115616986~115938466~115938469~116217636~116217638~116474637&amp;u_w=1920&amp;u_h=1080&amp;url=https%3A%2F%2Fwww.u7buy.com%2Fseller%2F1965875129555955713&amp;frm=0&amp;tiba=U7BUY%20-%20Trusted%20Pioneer%20in%20Global%20Digital%20World&amp;did=dY2Q2ZW&amp;gdid=dY2Q2ZW&amp;hn=www.googleadservices.com&amp;npa=0&amp;pscdl=noapi&amp;auid=1508717208.1763080188&amp;uaa=x86&amp;uab=64&amp;uafvl=Chromium%3B142.0.7444.163%7CGoogle%2520Chrome%3B142.0.7444.163%7CNot_A%2520Brand%3B99.0.0.0&amp;uamb=0&amp;uam=&amp;uap=Windows&amp;uapv=19.0.0&amp;uaw=0&amp;_tu=CA&amp;data=event%3Dgtag.config&amp;rfmt=3&amp;fmt=4"></script></head><body data-new-gr-c-s-check-loaded="14.1261.0" data-gr-ext-installed=""><div id="__nuxt" data-v-app=""><div><div data-v-4f6209c4="" data-v-36828ab3="" class="wrapper seller" style="--1510dd88: url() 0% 0% /100% no-repeat;"><div data-v-36828ab3="" class="main-right"><div data-v-36828ab3="" class="el-tabs el-tabs--top"><div class="el-tabs__content"><div data-v-36828ab3="" id="pane-1" class="el-tab-pane" role="tabpanel" aria-hidden="false" aria-labelledby="tab-1" style=""><div data-v-36828ab3="" class="tab2-content"><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">U7***************NT</p><span data-v-36828ab3="" class="icon-no-help"></span><!----><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Password was changed after a few weeks </p><p data-v-36828ab3="">✅Full Acces✅ PC 99 skins | Galaxy | The Reaper | Elite Agent | Take The L | Rogue Agent | Havoc | Sub Commander | Trailblazer | Fate | 250 VB</p></div><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">U7***************Rn</p><!----><span data-v-36828ab3="" class="icon-help-ful"></span><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Good (auto review)</p><p data-v-36828ab3="">❤️Full Acces✅[PC/XBOX] 288 skins | Black Knight | Renegade Raider | OG STW | Sparkle Specialist | The Reaper | Blue Squire | Royale Knight | Elite Age</p></div><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">U7*******TZ</p><!----><span data-v-36828ab3="" class="icon-help-ful"></span><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Good</p><p data-v-36828ab3="">✨ [PC/XBOX] | 📦 Full Acces | 112 skins | Honor Guard | Psycho Bandit | Merry Mint Axe | Neo Versa | Gold Brutus | Gold Midas | Gold Meowscles | Point</p></div><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">U7*******PY</p><!----><span data-v-36828ab3="" class="icon-help-ful"></span><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Good (auto review)</p><p data-v-36828ab3="">[PC/XBOX] ✅Full Acces✅ 113 skins | Black Knight | Sparkle Specialist | The Reaper | Blue Squire | Royale Knight | Elite Agent | Blue Team Leader | 155</p></div><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">Xz**</p><!----><span data-v-36828ab3="" class="icon-help-ful"></span><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Good (auto review)</p><p data-v-36828ab3="">✅[PC/XBOX/PSN] ✅Full Acces✅ FA 113 skins | Leviathan Axe | OG STW | Gold Midas Gold Brutus | Cloud Striker | Frostbite | Catalyst | Menace</p></div><div data-v-36828ab3="" class="tab2-item"><div data-v-36828ab3="" class="item-head"><p data-v-36828ab3="">U7***************Ij</p><!----><span data-v-36828ab3="" class="icon-help-ful"></span><p data-v-36828ab3="">2025/11/13</p></div><p data-v-36828ab3="">Good (auto review)</p><p data-v-36828ab3="">✅Full Acces✅ [PC/XBOX/PSN] 99 skins | OG STW | Neo Versa | Gold Brutus | Gold Midas | The Prisoner | Luxe | Fusion | Blackheart | Zenith | 100 VB</p></div></div></div></div></div></div></div></div></div></div></body></html>`;
+const initialHtml = `<html class="dark" lang="en"><head>
+<!-- Default placeholder content preserved -->
+<style>body {transition: opacity ease-in 0.2s; } body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } </style>
+</head><body><div class="placeholder">Paste your HTML here...</div></body></html>`;
 
-// Fix: The original App.tsx was incomplete and missing the component definition and default export.
-// This new implementation defines the App component, manages application state,
-// and handles navigation between the Scraper and Cleaner pages, resolving the import error.
+// -- Toast Component --
+const Toast = ({ message, onClose }: { message: string; onClose: () => void }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, x: '-50%' }}
+      animate={{ opacity: 1, y: 0, x: '-50%' }}
+      exit={{ opacity: 0, y: 20, x: '-50%' }}
+      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-3 bg-slate-900 border border-neon-cyan/30 text-white rounded-full shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+    >
+      <CheckCircle2 className="w-5 h-5 text-neon-cyan" />
+      <span className="font-medium text-sm">{message}</span>
+    </motion.div>
+  );
+};
+
 const App: React.FC = () => {
   const [page, setPage] = useState<Page>('scraper');
   const [htmlContent, setHtmlContent] = useState<string>(initialHtml.trim());
   const [scrapedData, setScrapedData] = useState<Product[]>([]);
   const [removedDuplicates, setRemovedDuplicates] = useState<Product[]>([]);
   const [filteredOutProducts, setFilteredOutProducts] = useState<Product[]>([]);
+  
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const NavButton: React.FC<{ targetPage: Page; children: React.ReactNode }> = ({ targetPage, children }) => (
-    <button
-      onClick={() => setPage(targetPage)}
-      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-        page === targetPage
-          ? 'bg-primary text-white'
-          : 'bg-base-200 text-gray-300 hover:bg-base-300'
-      }`}
-    >
-      {children}
-    </button>
-  );
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const steps = [
+    { id: 'scraper', label: 'Scrape (DOM)', icon: FileCode },
+    { id: 'scraper-v2', label: 'Scrape (AI)', icon: BrainCircuit },
+    { id: 'cleaner', label: 'Clean', icon: Eraser },
+    { id: 'beautifier', label: 'Beautify', icon: Wand2 },
+  ];
 
   return (
-    <div className="bg-base-100 text-gray-100 min-h-screen font-sans">
-      <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-            Web Scraper & Title Assistant
-          </h1>
-          <p className="text-center text-gray-400">
-            Extract product data, clean titles, and optimize them for sales offers.
-          </p>
-        </header>
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#050b1a] to-black text-slate-200 font-sans selection:bg-neon-cyan/30 selection:text-cyan-100">
+      <div className="max-w-7xl mx-auto px-4 py-10">
         
-        <nav className="flex flex-wrap justify-center gap-2 sm:space-x-4 mb-8">
-          <NavButton targetPage="scraper">1. Scraper (DOM)</NavButton>
-          <NavButton targetPage="scraper-v2">2. Scraper (AI)</NavButton>
-          <NavButton targetPage="cleaner">3. Title Cleaner (Regex)</NavButton>
-          <NavButton targetPage="beautifier">4. Title Beautifier (AI)</NavButton>
+        {/* Header */}
+        <header className="text-center mb-12 space-y-2">
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-slate-400 tracking-tight"
+          >
+            HTML OPTIMIZER
+          </motion.h1>
+          <motion.p 
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             transition={{ delay: 0.1 }}
+             className="text-slate-400 font-light text-lg"
+          >
+            Scrape. Clean. <span className="text-neon-cyan font-medium">Dominate.</span>
+          </motion.p>
+        </header>
+
+        {/* Stepper Navigation */}
+        <nav className="mb-12">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-white/5 -z-10 transform -translate-y-1/2" />
+
+            {steps.map((step, index) => {
+              const isActive = page === step.id;
+              const Icon = step.icon;
+              
+              return (
+                <motion.button
+                  key={step.id}
+                  onClick={() => setPage(step.id as Page)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative flex items-center gap-2 px-6 py-3 rounded-full border backdrop-blur-md transition-all duration-300 ${
+                    isActive 
+                      ? 'bg-neon-cyan/10 border-neon-cyan/50 text-neon-cyan shadow-[0_0_15px_rgba(34,211,238,0.3)]' 
+                      : 'bg-slate-900/60 border-white/10 text-slate-400 hover:bg-slate-800 hover:border-white/20'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : ''}`} />
+                  <span className="font-semibold text-sm tracking-wide">{step.label}</span>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="active-glow"
+                      className="absolute inset-0 rounded-full bg-neon-cyan/5 blur-md -z-10"
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
         </nav>
 
-        <main>
-          {page === 'scraper' && (
-            <ScraperPage
-              htmlContent={htmlContent}
-              setHtmlContent={setHtmlContent}
-              scrapedData={scrapedData}
-              setScrapedData={setScrapedData}
-              removedDuplicates={removedDuplicates}
-              setRemovedDuplicates={setRemovedDuplicates}
-              filteredOutProducts={filteredOutProducts}
-              setFilteredOutProducts={setFilteredOutProducts}
-            />
-          )}
-          {page === 'scraper-v2' && (
-            <ScraperPageV2
-              htmlContent={htmlContent}
-              setHtmlContent={setHtmlContent}
-              scrapedData={scrapedData}
-              setScrapedData={setScrapedData}
-              setRemovedDuplicates={setRemovedDuplicates}
-              setFilteredOutProducts={setFilteredOutProducts}
-            />
-          )}
-          {page === 'cleaner' && <CleanTitlesPage products={scrapedData} />}
-          {page === 'beautifier' && <TitleBeautifierPage />}
+        {/* Main Content Area */}
+        <main className="relative min-h-[600px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={page}
+              initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {page === 'scraper' && (
+                <ScraperPage
+                  htmlContent={htmlContent}
+                  setHtmlContent={setHtmlContent}
+                  scrapedData={scrapedData}
+                  setScrapedData={setScrapedData}
+                  removedDuplicates={removedDuplicates}
+                  setRemovedDuplicates={setRemovedDuplicates}
+                  filteredOutProducts={filteredOutProducts}
+                  setFilteredOutProducts={setFilteredOutProducts}
+                  showToast={showToast}
+                />
+              )}
+              {page === 'scraper-v2' && (
+                <ScraperPageV2
+                  htmlContent={htmlContent}
+                  setHtmlContent={setHtmlContent}
+                  scrapedData={scrapedData}
+                  setScrapedData={setScrapedData}
+                  setRemovedDuplicates={setRemovedDuplicates}
+                  setFilteredOutProducts={setFilteredOutProducts}
+                  showToast={showToast}
+                />
+              )}
+              {page === 'cleaner' && (
+                  <CleanTitlesPage products={scrapedData} showToast={showToast} />
+              )}
+              {page === 'beautifier' && (
+                  <TitleBeautifierPage showToast={showToast} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
+
       </div>
+
+      {/* Global Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
