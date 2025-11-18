@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 import ScraperPage from './pages/ScraperPage';
 import CleanTitlesPage from './pages/CleanTitlesPage';
+import TitleBeautifierPage from './pages/TitleBeautifierPage';
 import { Product } from './types';
 import ScraperPageV2 from './pages/ScraperPageV2';
 
-type Page = 'scraper' | 'scraper-v2' | 'cleaner';
+type Page = 'scraper' | 'scraper-v2' | 'cleaner' | 'beautifier';
 
 const initialHtml = `<html class="dark" lang="en"><head><style>body {transition: opacity ease-in 0.2s; } 
 body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
@@ -49,17 +51,18 @@ const App: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-            Web Scraper & Title Cleaner
+            Web Scraper & Title Assistant
           </h1>
           <p className="text-center text-gray-400">
-            A tool to extract product data using DOM parsing or AI, and clean up titles.
+            Extract product data, clean titles, and optimize them for sales offers.
           </p>
         </header>
         
-        <nav className="flex justify-center space-x-4 mb-8">
+        <nav className="flex flex-wrap justify-center gap-2 sm:space-x-4 mb-8">
           <NavButton targetPage="scraper">1. Scraper (DOM)</NavButton>
           <NavButton targetPage="scraper-v2">2. Scraper (AI)</NavButton>
-          <NavButton targetPage="cleaner">3. Title Cleaner</NavButton>
+          <NavButton targetPage="cleaner">3. Title Cleaner (Regex)</NavButton>
+          <NavButton targetPage="beautifier">4. Title Beautifier (AI)</NavButton>
         </nav>
 
         <main>
@@ -86,6 +89,7 @@ const App: React.FC = () => {
             />
           )}
           {page === 'cleaner' && <CleanTitlesPage products={scrapedData} />}
+          {page === 'beautifier' && <TitleBeautifierPage />}
         </main>
       </div>
     </div>

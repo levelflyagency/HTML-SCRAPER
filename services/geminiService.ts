@@ -1,4 +1,4 @@
-// FIX: Import GoogleGenAI and Type for Gemini API usage.
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { Product } from '../types';
 
@@ -157,11 +157,10 @@ export const scrapeProductsFromHtml = (html: string): {
   }
 };
 
-// FIX: Add the missing scrapeProductsWithGemini function to be used by ScraperPageV2.
 export const scrapeProductsWithGemini = async (html: string): Promise<{ products: Product[] }> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  const model = "gemini-2.5-pro";
+  const model = "gemini-2.5-flash";
 
   const prompt = `
     Analyze the following HTML to extract product information. The HTML could contain either direct product listings or a list of seller reviews that mention products.
@@ -244,5 +243,103 @@ export const scrapeProductsWithGemini = async (html: string): Promise<{ products
         throw new Error(`Error from Gemini API: ${error.message}`);
     }
     throw new Error("An unknown error occurred while scraping with Gemini.");
+  }
+};
+
+export const rewriteTitlesWithGemini = async (titles: string[]): Promise<string[]> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Use flash for speed on text tasks
+  const model = "gemini-2.5-flash";
+
+  // Filter out empty lines
+  const validTitles = titles.filter(t => t.trim().length > 0);
+
+  if (validTitles.length === 0) return [];
+
+  const prompt = `
+    You are a Title Optimizer for gaming accounts. Your goal is to rewrite raw titles into a specific sales format while retaining MAXIMUM information from the user's input.
+
+    ### 1. THE FORMAT STRUCTURE
+    "[Full Access] ✅ [HERO_SKIN] + [TOTAL_COUNT] ✨ [ALL_OTHER_SKINS]" (+ Optional Delivery Suffix)
+
+    ### 2. CRITICAL RULES (Read Carefully)
+
+    **RULE A: The "Anchor" is Mandatory**
+    * ALWAYS start with: \`[Full Access] ✅\`
+    * Remove "Full Access", "FA", "Access" from the rest of the text to save space.
+
+    **RULE B: The "Hero" Comes First**
+    * Identify the Best Skin (e.g., Deadpool, The Reaper, Black Knight) OR the Total Skin Count.
+    * Place this immediately after the ✅.
+    * Format: \`[Best Skin] + [Total Skins]\` (e.g., "Deadpool + 57 Skins").
+
+    **RULE C: Maximize Skin Retention (High Priority)**
+    * After the Hero and the ✨ separator, list as many remaining skins from the input as possible.
+    * **DO NOT CUT SKINS** unless you absolutely hit the 150-character limit.
+    * Use \`|\` or \`,\` to separate skins to save space.
+
+    **RULE D: The Delivery Suffix is OPTIONAL (Low Priority)**
+    * Only add \`⚡️ Instant Delivery\` at the end **IF** you have enough space remaining (Total < 130 chars).
+    * **NEVER** delete a skin name just to fit "Instant Delivery".
+    * If the title is full of skins, omit the ⚡️ suffix entirely.
+
+    ### 3. EXECUTION LOGIC
+    1.  Write: \`[Full Access] ✅\`
+    2.  Add: \`[Hero Skin] + [Count]\`
+    3.  Add: \` ✨ \`
+    4.  Fill remaining space (up to 150 chars) with all other skin names from input.
+    5.  Check remaining space. If > 20 chars left, Add: \` ⚡️ Instant Delivery\`. Else, STOP.
+
+    ### 4. EXAMPLES
+
+    **Input (Short - Fits everything):**
+    57 SKINS | Catalyst | Snap | Deadpool | Hybrid | Sparkle Supreme | X-Lord | Fusion
+    **Output:**
+    [Full Access] ✅ Deadpool + 57 Skins ✨ Catalyst | Snap | Hybrid | Sparkle Supreme | X-Lord | Fusion ⚡️ Instant Delivery
+
+    **Input (Long - Drops Delivery to save Skins):**
+    208 SKINS | The Reaper | Take The L | Mako Glider | Leviathan Axe | Elite Agent | Trinity Trooper | Major Glory | Blue Squire
+    **Output:**
+    [Full Access] ✅ The Reaper + 208 Skins ✨ Take The L | Mako Glider | Leviathan Axe | Elite Agent | Trinity Trooper | Major Glory | Blue Squire
+
+    **Input:**
+    44 SKINS | Omegarok | Peter Griffin | Spectra Knight | Valeria | Dupli-Kate | Santa Dogg | The Brat
+    **Output:**
+    [Full Access] ✅ Peter Griffin + 44 Skins ✨ Omegarok | Spectra Knight | Valeria | Dupli-Kate | Santa Dogg | The Brat ⚡️ Instant Delivery
+
+    ### YOUR TASK:
+    Rewrite the following raw titles adhering strictly to the logic above (Max 150 Chars).
+    
+    Input Titles:
+    ${JSON.stringify(validTitles)}
+  `;
+
+  const responseSchema = {
+    type: Type.OBJECT,
+    properties: {
+      rewrittenTitles: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING },
+      },
+    },
+    required: ["rewrittenTitles"],
+  };
+
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: responseSchema,
+      },
+    });
+
+    const jsonString = response.text.trim();
+    const parsed = JSON.parse(jsonString);
+    return parsed.rewrittenTitles || [];
+  } catch (error) {
+    console.error("Error rewriting titles:", error);
+    throw new Error("Failed to rewrite titles with AI.");
   }
 };
