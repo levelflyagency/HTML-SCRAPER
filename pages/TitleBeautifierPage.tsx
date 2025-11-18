@@ -27,9 +27,9 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
     setOutputTitles('');
     setProgress(0);
 
-    // Simulate processing time for better UX
-    const totalDuration = 600; 
-    const intervalTime = 30;
+    // Simulate processing time for better UX (users trust it more if it 'thinks')
+    const totalDuration = 800; 
+    const intervalTime = 20;
     const steps = totalDuration / intervalTime;
     let currentStep = 0;
 
@@ -40,7 +40,7 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
     }, intervalTime);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(resolve => setTimeout(resolve, 800));
 
       const titlesArray = inputTitles.split('\n').filter(t => t.trim().length > 0);
       const processedTitles = titlesArray.map(title => optimizeTitle(title));
@@ -81,8 +81,10 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
             <Gamepad2 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Universal Optimizer</h2>
-            <p className="text-slate-500 text-xs uppercase font-bold tracking-wider">Supports Valorant • CS2 • Fortnite • LoL • Genshin</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Universal Auto-Optimizer</h2>
+            <p className="text-slate-500 text-xs uppercase font-bold tracking-wider">
+              Supports Valorant • CS2 • Brawl Stars • CoC • Roblox • WoT • Minecraft • & More
+            </p>
           </div>
       </div>
 
@@ -94,7 +96,7 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
             className="flex flex-col space-y-4 h-full"
         >
           <div className="flex justify-between items-end">
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Raw Input (Any Game)</label>
+            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Raw Input (Mix Any Games)</label>
             <button 
               onClick={handleClear}
               className="text-xs text-slate-500 hover:text-white underline"
@@ -107,7 +109,12 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
              <textarea
                 value={inputTitles}
                 onChange={(e) => setInputTitles(e.target.value)}
-                placeholder={`Paste messy titles here... Examples:\n\nValorant: "NA Radiant Rank Reaver Vandal 100 skins"\nCS2: "Global Elite Dragon Lore 5000 hours full access"\nFortnite: "Black Knight 200 skins travis scott fa"`}
+                placeholder={`Paste messy titles from ANY game...\n
+Example: "Clash of clans th15 max heroes 20 skins"
+Example: "Brawl stars 50k trophies 70 brawlers leon crow"
+Example: "Roblox account korblox headless 50k robux limiteds"
+Example: "Wot account chieftain 279e tier X unicum stats"
+Example: "Valorant NA radiant kuronami vandal 100 skins"`}
                 className="w-full h-full p-5 bg-transparent text-slate-300 font-mono text-sm outline-none resize-none leading-relaxed placeholder:text-slate-700"
             />
           </div>
@@ -120,12 +127,12 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
             >
                 {isLoading ? (
                     <div className="flex items-center justify-center gap-3 z-10 relative">
-                        <span className="text-white/80 font-mono">PROCESSING... {Math.floor(progress)}%</span>
+                        <span className="text-white/80 font-mono">ANALYZING METRICS... {Math.floor(progress)}%</span>
                     </div>
                 ) : (
                     <div className="flex items-center justify-center gap-2 z-10 relative">
                         <Wand2 className="w-5 h-5" />
-                        <span>BEAUTIFY TITLES</span>
+                        <span>SMART BEAUTIFY (NO AI)</span>
                     </div>
                 )}
                 <div className="absolute inset-0 bg-white/20 blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
@@ -152,7 +159,7 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
         >
           <div className="flex justify-between items-center h-[20px]">
             <label className="text-sm font-semibold text-green-400 uppercase tracking-wide flex items-center gap-2">
-                 <ArrowRight className="w-4 h-4" /> Optimized Output
+                 <ArrowRight className="w-4 h-4" /> Smart Output
             </label>
             {outputTitles && (
               <button
@@ -177,14 +184,15 @@ const TitleBeautifierPage: React.FC<TitleBeautifierPageProps> = ({ showToast }) 
              <textarea
                 readOnly
                 value={outputTitles}
-                placeholder="Optimized results will appear here..."
+                placeholder="Results will appear here..."
                 className="w-full h-full p-5 bg-transparent font-mono text-sm outline-none resize-none text-green-50 placeholder:text-slate-800 leading-relaxed selection:bg-green-500/30"
             />
           </div>
           
-          <div className="h-[52px] flex items-center justify-center text-slate-600 text-xs gap-4">
-             <div className="flex items-center gap-1"><Zap className="w-3 h-3" /> Auto-Rank Detection</div>
-             <div className="flex items-center gap-1"><Zap className="w-3 h-3" /> Rare Skin Priority</div>
+          <div className="h-[52px] flex flex-wrap items-center justify-center text-slate-600 text-xs gap-4">
+             <div className="flex items-center gap-1"><Zap className="w-3 h-3" /> Auto-Game Detect</div>
+             <div className="flex items-center gap-1"><Zap className="w-3 h-3" /> Metric Parsing (TH/Robux)</div>
+             <div className="flex items-center gap-1"><Zap className="w-3 h-3" /> Rare Item Priority</div>
           </div>
         </motion.div>
       </div>
