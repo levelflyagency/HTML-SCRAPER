@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,25 +8,44 @@
     <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%233b82f6'%3e%3cpath fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.074 6.843 5 7.29 5c.447 0 .778.074 1.05.222.272.148.48.347.636.596.157.249.235.538.235.867 0 .329-.078.638-.235.928a1.99 1.99 0 01-.635.635 2.577 2.577 0 01-1.05.255c-.447 0-.778-.086-1.05-.255a1.99 1.99 0 01-.636-.636 2.226 2.226 0 01-.235-.928c0-.329.078-.618.235-.867zm3.437 6.132c.157-.249.235-.538.235-.867 0-.329-.078-.638-.235-.928a1.99 1.99 0 00-.636-.636 2.577 2.577 0 00-1.05-.255c-.447 0-.778.086-1.05-.255-.272.169-.48.38-.636.636a2.226 2.226 0 00-.235.928c0 .329.078.618.235.867.157.25.364.448.636.596.272.148.59.222 1.05.222.46 0 .788-.074 1.05-.222a1.99 1.99 0 00.635-.596z' clip-rule='evenodd' /%3e%3c/svg%3e">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+      /* Custom Scrollbar for "Code Editor" feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
       }
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-out forwards;
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2); 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569; 
+      }
+      
+      body {
+        background-color: #020617;
+        color: #e2e8f0;
       }
     </style>
     <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+          },
           colors: {
-            'primary': '#3b82f6',
-            'primary-dark': '#2563eb',
-            'secondary': '#10b981',
-            'base-100': '#0a0a23',
-            'base-200': '#161b33',
-            'base-300': '#21263d',
+            'neon-cyan': '#22d3ee',
+            'neon-purple': '#a855f7',
+            'glass-bg': 'rgba(255, 255, 255, 0.03)',
+            'glass-border': 'rgba(255, 255, 255, 0.08)',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }
         }
       }
@@ -34,16 +54,21 @@
 <script type="importmap">
 {
   "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@1.29.0",
+    "framer-motion": "https://esm.sh/framer-motion@10.18.0?external=react,react-dom",
+    "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react,react-dom",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0"
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
   }
 }
 </script>
 </head>
-<body class="bg-base-100">
+<body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>
+    
